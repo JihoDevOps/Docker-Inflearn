@@ -156,3 +156,124 @@ Options:
   -q, --quiet           Only display container IDs
   -s, --size            Display total file sizes
 ```
+
+---
+
+## 도커 컨테이너의 생명주기
+
+1. 생성 create
+2. 시작 start
+3. 실행 running
+4. 중지 stopped
+5. 삭제 deleted
+
+### 1. 생성 Create
+
+```bash
+docker create <image>
+```
+
+파일 스냅샷을 하드디스크에 생성한다.
+
+### 2. 시작 Start
+
+```bash
+docker start <container id/name>
+```
+
+스냅샷마다 각자 실행될 명령어를 가지고 있는데,
+그 명령어를 실행시킨다.
+이때, 하드디스크에 스냅샷이 있어야 정상적으로 실행된다.
+
+### 3. 실행 Running
+
+실행 = 생성 + 시작
+
+```bash
+docker run <image>
+```
+
+### 4. 중지 Stopped
+
+```bash
+docker stop <image>
+```
+
+### 5. 삭제 Deleted
+
+```bash
+docker rm <container id/name>
+```
+
+### hello-world test
+
+#### 1. create
+
+```bash
+> docker create hello-world
+d597e3c3c70db5f5b6ae6ea3747bd8bddd99585917f915deb6e43da9759cb14a
+```
+
+image를 생성하면 해당 컨테이너의 ID 해시값을 얻을 수 있다.
+
+#### 2. start
+
+```bash
+docker start -a <ID의 일부분>
+```
+
+```bash
+> docker start -a d597e3c
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+```
+
+위처럼 정상적으로 실행된 것을 확인할 수 있다.
+
+`-a`는 attach 옵션이다. 설명은 다음과 같이 확인할 수 있다.
+
+```bash
+> docker start --help
+
+Usage:  docker start [OPTIONS] CONTAINER [CONTAINER...]
+
+Start one or more stopped containers
+
+Options:
+  -a, --attach               Attach STDOUT/STDERR and forward signals
+      --detach-keys string   Override the key sequence for detaching a
+                             container
+  -i, --interactive          Attach container's STDIN
+```
+
+`-a` 옵션 없이 실행하면 다음과 같이 아무 일도 일어나지 않는 것처럼 보여진다.
+
+```bash
+> docker start d597e3c
+d597e3c
+```
+
+`-a`는 `Attach STDOUT/STDERR and forward signals`와 같은 설명처럼
+해당 이미지의 실행을 지켜보면서 출력할 일이 있으면 출력하는 것으로 생각하자.
+
+---
+
