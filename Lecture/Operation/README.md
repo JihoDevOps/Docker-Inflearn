@@ -348,3 +348,112 @@ alpine이 kill하자마자 중지되었다.
 3. Container의 Main Process 종료
 
 ---
+
+## 컨테이너 삭제하기
+
+```bash
+docker rm <container id/name>
+```
+
+실행 중인 컨테이너는 먼저 중지한 후에 삭제할 수 있다.
+
+```bash
+> docker ps -a
+CONTAINER ID   IMAGE         COMMAND            CREATED          STATUS                        PORTS     NAMES
+fc42c1ae15c5   alpine        "ping localhost"   10 minutes ago   Exited (137) 10 minutes ago             priceless_newton
+70ae57474f4d   alpine        "ping localhost"   13 minutes ago   Exited (137) 12 minutes ago             cool_ellis
+d597e3c3c70d   hello-world   "/hello"           28 minutes ago   Exited (0) 21 minutes ago               suspicious_archimedes
+90b6d15b03ae   alpine        "ping localhost"   2 days ago       Exited (137) 2 days ago                 angry_gauss
+9ac14115dfbf   hello-world   "ls"               2 days ago       Created                                 dreamy_pike
+7f25d13f2ff7   alpine        "ls"               2 days ago       Exited (0) 2 days ago                   nifty_matsumoto
+5866913dfc45   hello-world   "/hello"           4 days ago       Exited (0) 4 days ago                   musing_allen
+958f7f32e031   hello-world   "/hello"           4 days ago       Exited (0) 4 days ago                   nostalgic_montalcini
+
+> docker rm fc42c1ae15c5
+fc42c1ae15c5
+
+> docker ps -a
+CONTAINER ID   IMAGE         COMMAND            CREATED          STATUS                        PORTS     NAMES
+70ae57474f4d   alpine        "ping localhost"   13 minutes ago   Exited (137) 13 minutes ago             cool_ellis
+d597e3c3c70d   hello-world   "/hello"           28 minutes ago   Exited (0) 22 minutes ago               suspicious_archimedes
+90b6d15b03ae   alpine        "ping localhost"   2 days ago       Exited (137) 2 days ago                 angry_gauss
+9ac14115dfbf   hello-world   "ls"               2 days ago       Created                                 dreamy_pike
+7f25d13f2ff7   alpine        "ls"               2 days ago       Exited (0) 2 days ago                   nifty_matsumoto
+5866913dfc45   hello-world   "/hello"           4 days ago       Exited (0) 4 days ago                   musing_allen
+958f7f32e031   hello-world   "/hello"           4 days ago       Exited (0) 4 days ago                   nostalgic_montalcini
+```
+
+ID가 `fc42c1ae15c5`인 alpine container가 삭제된 것을 확인할 수 있다.
+
+### 모든 컨테이너 삭제하기
+
+모든 컨테이너를 삭제할 때는 다음과 같이 입력한다.
+
+```bash
+docker rm `docker ps -a -q`
+docker rm $(docker ps -qa)
+```
+
+그런데 되지 않았다.
+
+이유는 ***Windows Command***에서는 실행되지 않는다.
+문법적인 충돌이 있는지 다른 이유는 모르겠다.
+
+해결법은 cmd가 아닌 다른 터미널로 실행하는 것이다.
+Git Bash로 실행한 결과는 다음과 같다.
+
+```bash
+$ docker rm `docker ps -qa`
+70ae57474f4d
+d597e3c3c70d
+90b6d15b03ae
+7f25d13f2ff7
+5866913dfc45
+958f7f32e031
+
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+```
+
+정상적으로 전부 삭제된 것을 볼 수 있다.
+
+docker를 초기화할 때는
+[여기](https://gist.github.com/beeman/aca41f3ebd2bf5efbd9d7fef09eac54d)를 참고하자.
+fork해서
+[내 gist](https://gist.github.com/Jihogrammer/f3ca245be4b141b4f9880c03ed49574f)에도
+간략하게 정리했다.
+
+## 이미지 삭제하기
+
+```bash
+docker rmi <image id>
+```
+
+## 한 번에 컨테이너, 이미지, 네트워크 모두를 삭제 ⚠
+
+
+```bash
+docker system prune
+```
+
+-   도커를 쓰지 않을 때, 모두 정리하고 싶을 때 사용해주면 좋음
+-   하지만 이것도 실행 중인 컨테이너에는 영향을 주지 않는다.
+-   docker를 많이 쓰다 보면 보이지 않는 파일들이 계속 생성되기 때문에
+    종종 해주면 좋다.
+
+```bash
+$ docker system prune
+
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+86414f5dcaaaf69be6ec536de13455fb1bfd06a2e9e996617d3b3c5b1bcf39ab
+
+Total reclaimed space: 0B
+```
