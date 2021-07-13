@@ -277,3 +277,74 @@ d597e3c
 
 ---
 
+## Docker `STOP`, Docker `KILL`.
+
+```bash
+docker stop <container id/name>
+```
+
+```bash
+docker kill <container id/name>
+```
+
+두 명령어는 실행 중인 컨테이너를 중지시킨다.
+
+### `stop`은 Gracefully하게 중지시킨다.
+
+자비롭게 그 동안 하던 작업들을 완료하고 컨테이너를 중지시킨다.
+
+```bash
+> docker run alpine ping localhost
+
+PING localhost (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: seq=0 ttl=64 time=0.153 ms
+64 bytes from 127.0.0.1: seq=1 ttl=64 time=0.099 ms
+64 bytes from 127.0.0.1: seq=2 ttl=64 time=0.103 ms
+64 bytes from 127.0.0.1: seq=3 ttl=64 time=0.098 ms
+64 bytes from 127.0.0.1: seq=4 ttl=64 time=0.101 ms
+...
+```
+
+```bash
+> docker stop 70ae57474f4d
+
+70ae57474f4d
+```
+
+약간의 딜레이가 있고 얼마 안 있고 alpine이 종료된다.
+
+### `kill`은 어떠한 것도 기다리지 않고, 바로 컨테이너를 중지시킨다.
+
+```bash
+> docker run alpine ping localhost
+
+PING localhost (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: seq=0 ttl=64 time=0.104 ms
+64 bytes from 127.0.0.1: seq=1 ttl=64 time=0.095 ms
+64 bytes from 127.0.0.1: seq=2 ttl=64 time=0.041 ms
+64 bytes from 127.0.0.1: seq=3 ttl=64 time=0.099 ms
+64 bytes from 127.0.0.1: seq=4 ttl=64 time=0.098 ms
+...
+```
+
+```bash
+> docker kill fc42c1ae15c5
+fc42c1ae15c5
+```
+
+alpine이 kill하자마자 중지되었다.
+
+### STOP
+
+1. `docker stop`
+2. `SIGTERM` : Grace Period, 정리하는 시간
+3. `SIGKILL`
+4. Container의 Main Process 종료
+
+### KILL
+
+1. `docker kill`
+2. `SIGKILL` : 정리하는 시간 없이 바로 종료
+3. Container의 Main Process 종료
+
+---
