@@ -430,7 +430,7 @@ fork해서
 docker rmi <image id>
 ```
 
-## 한 번에 컨테이너, 이미지, 네트워크 모두를 삭제 ⚠
+### 한 번에 컨테이너, 이미지, 네트워크 모두를 삭제 ⚠
 
 
 ```bash
@@ -456,4 +456,236 @@ Deleted Containers:
 86414f5dcaaaf69be6ec536de13455fb1bfd06a2e9e996617d3b3c5b1bcf39ab
 
 Total reclaimed space: 0B
+```
+
+---
+
+## 실행 중인 컨테이너에 명령어 전달하기
+
+``` bash
+docker exec <container id>
+```
+
+1.  먼저 터미널 2개를 실행합니다.
+2.  첫 번째 터미널에서 컨테이너 하나를 실행합니다.
+    > `docker run alpine ping localhost`
+3.  두 번째 터미널에서 컨테이너가 잘 작동하고 있는지 확인하고,
+    다른 명령어를 전달합니다.
+    > `docker exec <container id> ls`
+
+#### Terminal A
+
+```bash
+$ docker run alpine ping localhost
+PING localhost (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: seq=0 ttl=64 time=0.044 ms
+64 bytes from 127.0.0.1: seq=1 ttl=64 time=0.039 ms
+64 bytes from 127.0.0.1: seq=2 ttl=64 time=0.034 ms
+64 bytes from 127.0.0.1: seq=3 ttl=64 time=0.036 ms
+64 bytes from 127.0.0.1: seq=4 ttl=64 time=0.035 ms
+64 bytes from 127.0.0.1: seq=5 ttl=64 time=0.035 ms
+64 bytes from 127.0.0.1: seq=6 ttl=64 time=0.035 ms
+64 bytes from 127.0.0.1: seq=7 ttl=64 time=0.035 ms
+64 bytes from 127.0.0.1: seq=8 ttl=64 time=0.035 ms
+64 bytes from 127.0.0.1: seq=9 ttl=64 time=0.037 ms
+...
+```
+
+#### Terminal B
+
+```bash
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND            CREATED          STATUS          PORTS     NAMES
+8cb4adb41550   alpine    "ping localhost"   19 seconds ago   Up 17 seconds             charming_mestorf
+
+$ docker exec 8cb4adb41550 ls
+bin
+dev
+etc
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+
+$ docker stop 8cb4adb41550
+8cb4adb41550
+```
+
+---
+
+## 레디스를 이용한 컨테이너 이해
+
+레디스 서버가 먼저 작동하고 있어야 한다.
+그 후 레디스 클라이언트 실행 후 명령어를 레디스 서버에 전달한다.
+
+```text
+Redis Client  ------------------->     Redis Server
+(redis-cli)    "set value1 hello"   (docker run redis)
+```
+
+위와 같이 먼저 레디스 서버를 실행 후,
+레디스 클라이언트를 통해서 서버에 명령어를 전달한다.
+
+1.  먼저 첫 번째 터미널 실행 후, 레디스 서버를 작동한다.
+    > `docker run redis`
+2.  두 번째 터미널에서 레디스 클라이언트를 작동한다.
+    > `redis-cli`
+3.  하지만 에러가 난다. 무엇이 잘못된 걸까?
+    > 아니 맥 환경과 윈도우 환경이 다르다.
+    > 우선 [레디스 설치](https://github.com/microsoftarchive/redis)가 필요하다.
+
+### 현재 레디스 클라이언트와 서버 상황
+
+```text
+     Redis Client     ---- X --->   Container
+   실행하려 하지만                      Redis Server
+컨테이너 밖이라 불가능                      running...
+```
+
+Redis Client가 Redis Server가 있는 Container 외부에서 접근할 수 없다.
+그래서 에러가 나는 원리지만,
+Windows 10에서 Redis 설치하고 할 때는 에러가 발생하지 않았다.
+
+에러가 난다는 가정 하에, 이 문제를 해결하기 위해서는
+레디스 클라이언트도 컨테이너 안에서 실행한다.
+
+1.  먼저 이전과 똑같이 첫 번째 터미널에서 레디스 서버를 작동한다.
+    > `docker run redis`
+2.  이제 이전에 배운 `exec` 명령어를 사용한다.
+    이미 실행 중인 컨테이너에 명령어를 전달하여 레디스 클라이언트를 실행한다.
+    > `docker exec -it <container id> redis-cli`
+
+> 이때 Windows 10에서 redis를 지우고 실행했더니 잘 동작했다.
+> 도커의 원리를 생각하면 당연했다.
+> 애당초 docker가 하나의 운영체제 위에서 실행되고,
+> docker에는 이미 `docker run redis`로 인해 redis가 있을 것이다.
+> 그래서 위와 같은 방법으로 redis 설치 없이 redis-cli를 실행할 수 있다.
+
+#### Terminal A
+
+```bash
+$ docker run redis
+Unable to find image 'redis:latest' locally
+latest: Pulling from library/redis
+b4d181a07f80: Pull complete                                                        86e428f79bcb: Pull complete                                                        ba0d0a025810: Pull complete                                                        ba9292c6f77e: Pull complete                                                        b96c0d1da602: Pull complete                                                        5e4b46455da3: Pull complete                                                        Digest: sha256:b6a9fc3535388a6fc04f3bdb83fb4d9d0b4ffd85e7609a6ff2f0f731427823e3
+Status: Downloaded newer image for redis:latest
+1:C 17 Jul 2021 07:38:39.734 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 17 Jul 2021 07:38:39.734 # Redis version=6.2.4, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 17 Jul 2021 07:38:39.734 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+1:M 17 Jul 2021 07:38:39.734 * monotonic clock: POSIX clock_gettime
+1:M 17 Jul 2021 07:38:39.735 * Running mode=standalone, port=6379.
+1:M 17 Jul 2021 07:38:39.735 # Server initialized
+1:M 17 Jul 2021 07:38:39.735 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:M 17 Jul 2021 07:38:39.735 * Ready to accept connections
+```
+
+#### Terminal B
+
+```bash
+$ docker exec --help
+
+Usage:  docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
+
+Run a command in a running container
+
+Options:
+  -d, --detach               Detached mode: run command in the background
+      --detach-keys string   Override the key sequence for detaching a
+                             container
+  -e, --env list             Set environment variables
+      --env-file list        Read in a file of environment variables
+  -i, --interactive          Keep STDIN open even if not attached
+      --privileged           Give extended privileges to the command
+  -t, --tty                  Allocate a pseudo-TTY
+  -u, --user string          Username or UID (format:
+                             <name|uid>[:<group|gid>])
+  -w, --workdir string       Working directory inside the container
+
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS      NAMES
+10756541a93a   redis     "docker-entrypoint.s…"   20 minutes ago   Up 20 minutes   6379/tcp   wonderful_hugle
+
+$ docker exec -it 10756541a93a redis-cli
+127.0.0.1:6379> (성공!)
+```
+
+---
+
+## 실행 중인 컨테이너에서 터미널 생활 즐기기
+
+지금까지 실행 중인 컨테이너에 명령어를 전달할 때 다음과 같이 사용했다.
+
+```bash
+docker exec -it <container id> <operation>
+```
+
+이 방법은 사실 피곤하다.
+명령어 하나를 입력할 때마다 위 명령어를 계속 입력한다.
+
+이러한 문제점을 해결하기 위해 컨테이너 안에
+Shell이나 Terminal 환경으로 접속할 수 있다.
+
+> ### `sh`
+
+`bash`, `zsh`, `powershell` 등 실행할 수 있는 터미널의 종류가 많지만,
+image에 종속되는 경우가 있어 일반적으로 `sh`를 사용한다.
+
+```bash
+docker exec -it <container id> sh
+```
+
+### 컨테이너를 Shell 환경으로 접근하기
+
+1.  첫 번째 터미널에서 alpine 이미지를 이용하여 컨테이너를 실행한다.
+    > `docker run alpine ping localhost`
+2.  다른 터미널에서 Operation을 `sh`로 입력하여
+    컨테이너 내부에서 터미널 환경을 실행한다.
+    > `docker exec -it <container id> sh`
+3.  그 안에서 여러 가지 터미널에서 원래 할 수 있는 작동들을 할 수 있다.
+    > ``` bash
+    > ls                container directory에 있는 내용 확인
+    > touch <new-file>  파일 생성
+    > export hello=hi   변수 생성
+    > echo $hello       변수 출력
+    > ```
+
+#### Terminal A
+
+```bash
+$ docker run alpine ping localhost
+PING localhost (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: seq=0 ttl=64 time=0.027 ms
+64 bytes from 127.0.0.1: seq=1 ttl=64 time=0.036 ms
+64 bytes from 127.0.0.1: seq=2 ttl=64 time=0.037 ms
+64 bytes from 127.0.0.1: seq=3 ttl=64 time=0.042 ms
+...
+```
+
+#### Terminal B
+
+```bash
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND            CREATED          STATUS          PORTS     NAMES
+792899d2e746   alpine    "ping localhost"   23 seconds ago   Up 22 seconds             determined_ardinghelli
+
+$ docker exec -it 792899 sh
+/ #
+```
+
+Terminal B에서 `sh`를 빠져나오려면 `ctrl + D`로 빠져나올 수 있다.
+
+### `exec` 대신 `run`으로도 가능하다
+
+```bash
+docker run -it <image name> sh
 ```
