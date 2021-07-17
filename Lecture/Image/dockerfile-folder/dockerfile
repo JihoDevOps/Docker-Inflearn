@@ -1,0 +1,8 @@
+# Base Image는 간단하게 alpine으로 수행한다.
+FROM alpine
+
+# alpine에 필요한 기능이 준비되어 있으므로 생략한다.
+# RUN command
+
+# "hello"를 출력한다.
+CMD ["echo", "hello"]
