@@ -1,0 +1,11 @@
+{
+  "name": "nodejs-docker-app-basic",
+  "version": "1.0.0",
+  "description": "Doc 이용한 간단한 Node App",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jihogrammer",
+  "license": "ISC"
+}
