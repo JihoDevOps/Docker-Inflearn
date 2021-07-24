@@ -306,6 +306,72 @@ Server is running...
 
 ## 5. Working Directory 명시해주기
 
+### Working Directory란?
+
+이미지 안에서 어플리케이션 소스코드를 가지고 있을 디렉토리를 생성한다.
+이때 해당 디렉토리가 Working Directory이다.
+
+### 필요한 이유
+
+`Node` 이미지에는 여러 스냅샷 파일들이 다음과 같이 들어있다.
+
+```bash
+$ docker run -it node ls
+Unable to find image 'node:latest' locally
+latest: Pulling from library/node
+627b765e08d1: Pull complete
+c040670e5e55: Pull complete
+073a180f4992: Pull complete
+bf76209566d0: Pull complete
+ca7044ed766e: Pull complete
+51bff5b8b0ef: Pull complete
+ec88359bd66f: Pull complete
+1829abc8bab1: Pull complete
+47f423bb50ee: Pull complete
+Digest: sha256:8229a1f3580d32fa18b2304fa23df6e9e3d53fdb958fd8ffe812ca7a0a26bb69
+Status: Downloaded newer image for node:latest
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+```
+
+위에서 만든 nodejs app 안에는 다음과 같이 스냅샷이 들어있다.
+
+```bash
+$ docker run -it jiho/nodejs ls
+bin   dockerfile  lib    mnt           package-lock.json  root  server.js  tmp
+boot  etc         lib64  node_modules  package.json       run   srv        usr
+dev   home        media  opt           proc               sbin  sys        va
+```
+
+Base Image와 섞여 지저분한 것을 볼 수 있다. 이 때문에 문제가 발생할 수 있다.
+
+1.  혹시 이 중에서 베이스 이미지에 있던 파일과 이름이 같다면?  
+    ex) 베이스 이미지에 이미 home이라는 폴더가 있고
+    COPY를 함으로써 새로 추가되는 폴더 중에 home 폴더가 있을 경우
+    중복으로 인해 기존 home이 덮어씌어질 수 있다.
+2.  모든 파일이 한 디렉토리에 들어가면 복잡도가 증가한다.
+
+따라서 모든 어플리케이션을 위핸 소스들을 WORK 디렉토리를 따로 만들어 관리한다.
+
+```dockerfile
+WORKDIR /usr/src/app # 이 부분을 dockerfile에 추가한다.
+```
+
+위 코드를 추가하고, 다시 dockerfile을 빌드한다.
+이후 디렉토리 구성이 어떻게 되어 있는지 다시 확인한다.
+
+```shell
+$ docker run -it jiho/nodejs sh
+# ls
+dockerfile  node_modules  package-lock.json  package.json  server.js
+# cd /
+# ls
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+```
+
+Default Directory가 `/usr/src/app`으로 설정되어 있고,
+Container Root는 `cd /`명령어로 접근할 수 있다.
+
 ---
 
 ## 6. 어플리케이션 소스 변경으로 다시 빌드하는 것에 대한 문제점
