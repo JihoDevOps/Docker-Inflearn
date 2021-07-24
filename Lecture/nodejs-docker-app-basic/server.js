@@ -11,3 +11,4 @@ app.get('/', (req, res) => {
 
 // Run
 app.listen(PORT);
+console.log("Server is running...");
