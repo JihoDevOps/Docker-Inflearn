@@ -391,6 +391,26 @@ Container 안에 있는 파일들이 수정될리 만무하다.
 
 ## 7. 어플리케이션 소스 변경으로 재빌드 시 효율적으로 하는 법
 
+먼저 이미 완성된 dockerfile은 다음과 같다.
+
+```dockerfile
+FROM    node:10
+WORKDIR /use/src/app
+COPY    package*.json ./
+RUN     npm install
+COPY    ./ ./
+CMD     ["node", "server.js"]
+```
+
+`COPY`를 두 번 사용하는 것을 볼 수 있다.
+`npm install` 시 불필요한 다운로드를 피하기 위함이다.
+원래 모듈을 다시 받는 것은 모듈에 변화가 생겨야만 다시 받아야 하는데,
+소스코드에 조금의 변화만 생겨도 모듈 전체를 다시 다운 받는 문제점이 있다.
+
+> 문자열 하나 수정했다고 node module들을 다시 다운받는다?
+
+종속성을 확인하고, 매번 node module들을 다시 다운받는 비효율적인 수행을 막는다.
+
 ---
 
 ## 8. Docker Volume에 대하여
