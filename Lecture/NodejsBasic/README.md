@@ -415,4 +415,45 @@ CMD     ["node", "server.js"]
 
 ## 8. Docker Volume에 대하여
 
----
+##### mac vs windows
+
+>   mac에서 `-v $(pwd):/usr/src/app` 명령어 부분은 windows와 다르다.
+>   windows에서는 `-v %cd%:/usr/src/app`으로 사용한다.
+>   git bash를 사용할 때는 mac 방식도 가능하다.
+
+위에서 `npm install` 전에 `package.json`만 따로 변경을 해서 효율을 올렸다.
+
+하지만 아직도 소스를 변경할 때마다 다시 빌드해야 제대로 동작한다.
+이러한 문제점을 해결하기 위해 `COPY`를 대체하여 ***Volume***을 사용한다.
+
+도커 컨테이너가 로컬 디렉토리를 참조하는 방식으로 바꾼다.
+단, 명령어가 매우 길어진다.
+
+```bash
+docker run -d -p [my-port]:[docker-port] -v [workdir]/node_modules -v $(pwd):[workdir] [image-id] # mac
+docker run -d -p [my-port]:[docker-port] -v [workdir]/node_modules -v %cd%:[workdir] [image-id]   # windows
+```
+
+>   ##### -d; detach : run 이후 바로 입력창으로 나오게 설정한다.
+
+```bash
+-v [workdir]/node_modules
+```
+
+Host Directory에 node_module이 없으므로 컨테이너에 매핑하지 않도록 설정한다.
+
+### pwd; print working directory
+
+현재 작업 중인 디렉터리의 이름을 출력하는 데 사용한다.
+
+> windows에서 git bash를 사용하면 mac과 비슷한 명령어를 사용할 수 있었다.
+> 하지만 `pwd` 명령어는 결국 제대로 동작하지 않았다.
+> 원인은 각 운영체제의 경로구분자(`/`, `\`)가 다르기 때문이라고 생각한다.
+> 결국 따로 cmd를 켜서 `pwd` 대신 `%cd%`로 해결했다.
+
+제일 달라진 점은 원래 docker 내부에 node_modules가 위치하는데,
+node project root에 node_modules 폴더가 생성됐다.
+내가 생각했던 이점과 위배되는 일이지만,
+다시 빌드하지 않아도 되는 이점이 더 크게 다가오긴 한다.
+
+아니었다. 그냥 디렉터리만 생성됐지, 내부는 비었다^___^
