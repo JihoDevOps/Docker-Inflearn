@@ -1,7 +1,8 @@
 # Base Image
 FROM node:10
 
-COPY package.json ./
+# 현재 디렉토리에 있는 모든 파일들을 컨테이너에 복사한다.
+COPY ./ ./
 
 RUN npm install
 
