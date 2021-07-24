@@ -1,6 +1,9 @@
 # Base Image
 FROM node:10
 
+# Working Directory
+WORKDIR /usr/src/app
+
 # 현재 디렉토리에 있는 모든 파일들을 컨테이너에 복사한다.
 COPY ./ ./
 
