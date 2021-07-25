@@ -223,6 +223,97 @@ redis server 따로, node + redis client 따로인 상태이다.
 
 ## 5. Docker Compose 파일 작성하기
 
+Docker Compose가 컨테이너 사이에 네트워크를 연결한다.
+
+### `docker-compose.yml`
+
+#### yml?
+
+>   YAML, **Ain't Markup Language**의 약자.
+>   일반적으로 구성 파일 및 데이터가
+>   저장되거나 전송되는 응용 프로그램에서 사용한다.
+>   원래 XML이나 JSON 포맷으로 많이 쓰였지만,
+>   좀 더 사람이 읽기 쉬운 포맷으로 등장한 것이 `yaml`이다.
+
+#### 구조 (docker-compose version 3)
+
+##### redis-server
+
+-   레디스 이미지 사용 명시
+
+##### node-app
+
+1.  도커 파일 사용
+2.  포트 매핑
+
+##### docker-compose.yml
+
+-   version : 도커 컴포즈의 버전
+-   services : 이곳에 실행하려는 컨테이너들을 정의
+    -   redis-server : 컨테이너 이름
+        -   image : 컨테이너에서 사용하는 이미지
+    -   node-app : 컨테이너 이름
+        -   build : 현 디렉터리에 있는 dockerfile 사용
+        -   ports : 포트 매핑. `로컬 포트:컨테이너 포트`
+
+```yml
+version: "3"
+servives:
+  redis-server:
+    image: "redis"
+  node-app:
+    build: .
+    ports:
+      - "5000:8080"
+```
+
+### docker compose 사용
+
+```bash
+$ docker-compose up
+```
+
+```bash
+$ docker-compose up
+Creating network "nodejs-docker-compose-app_default" with the default driver
+Building node-app
+[+] Building 5.1s (10/10) FINISHED
+ => [internal] load build definition from Dockerfile                                                                                                                                                      0.1s 
+ => => transferring dockerfile: 135B                                                                                                                                                                      0.0s 
+ => [internal] load .dockerignore                                                                                                                                                                         0.0s 
+ => => transferring context: 2B                                                                                                                                                                           0.0s 
+ => [internal] load metadata for docker.io/library/node:10                                                                                                                                                2.1s 
+ => [auth] library/node:pull token for registry-1.docker.io                                                                                                                                               0.0s 
+ => [1/4] FROM docker.io/library/node:10@sha256:59531d2835edd5161c8f9512f9e095b1836f7a1fcb0ab73e005ec46047384911                                                                                          0.0s 
+ => [internal] load build context                                                                                                                                                                         0.0s 
+ => => transferring context: 1.32kB                                                                                                                                                                       0.0s 
+ => CACHED [2/4] WORKDIR /usr/src/app                                                                                                                                                                     0.0s 
+ => [3/4] COPY ./ ./                                                                                                                                                                                      0.0s 
+ => [4/4] RUN npm install                                                                                                                                                                                 2.6s 
+ => exporting to image                                                                                                                                                                                    0.2s 
+ => => exporting layers                                                                                                                                                                                   0.1s 
+ => => writing image sha256:78975f95c8956199419387b62ba1e404903989026fa179d47666157ada5024c9                                                                                                              0.0s 
+ => => naming to docker.io/library/nodejs-docker-compose-app_node-app                                                                                                                                     0.0s 
+WARNING: Image for service node-app was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Creating nodejs-docker-compose-app_redis-server_1 ... done
+Creating nodejs-docker-compose-app_node-app_1     ... done
+Attaching to nodejs-docker-compose-app_node-app_1, nodejs-docker-compose-app_redis-server_1
+redis-server_1  | 1:C 25 Jul 2021 06:26:16.133 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-server_1  | 1:C 25 Jul 2021 06:26:16.133 # Redis version=6.2.4, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-server_1  | 1:C 25 Jul 2021 06:26:16.133 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+redis-server_1  | 1:M 25 Jul 2021 06:26:16.134 * monotonic clock: POSIX clock_gettime
+redis-server_1  | 1:M 25 Jul 2021 06:26:16.134 * Running mode=standalone, port=6379.
+redis-server_1  | 1:M 25 Jul 2021 06:26:16.134 # Server initialized
+redis-server_1  | 1:M 25 Jul 2021 06:26:16.134 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+redis-server_1  | 1:M 25 Jul 2021 06:26:16.136 * Ready to accept connections
+node-app_1      | server is running...
+```
+
+`client` 오류 발생 이유는 정말 함수가 아니어서 그랬다.
+`client(...)`에서 `client.get(...)`으로 수정하고,
+`--build` 옵션을 주고 다시 실행한다.
+이 옵션은 다시 빌드하게 하는 옵션이다.
+
 ---
 
 ## 6. Docker Compose로 컨테이너를 멈추기
