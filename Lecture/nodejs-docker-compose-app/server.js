@@ -13,7 +13,7 @@ const app = express();
 client.set("number", 0);
 
 app.get('/', (req, res) => {
-    client("number", (err, number) => {
+    client.get("number", (err, number) => {
         // 현재 숫자를 가져온 후 1씩 증가
         client.set("number", parseInt(number) + 1);
         res.send("숫자가 1씩 증가한다. 숫자: " + number);
