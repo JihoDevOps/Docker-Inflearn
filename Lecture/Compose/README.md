@@ -314,6 +314,88 @@ node-app_1      | server is running...
 `--build` 옵션을 주고 다시 실행한다.
 이 옵션은 다시 빌드하게 하는 옵션이다.
 
+```bash
+$ docker-compose up --build
+Building node-app
+[+] Building 4.3s (9/9) FINISHED
+ => [internal] load build definition from Dockerfile                                                                                                                                                      0.0s 
+ => => transferring dockerfile: 31B                                                                                                                                                                       0.0s 
+ => [internal] load .dockerignore                                                                                                                                                                         0.0s 
+ => => transferring context: 2B                                                                                                                                                                           0.0s 
+ => [internal] load metadata for docker.io/library/node:10                                                                                                                                                1.0s 
+ => [internal] load build context                                                                                                                                                                         0.0s 
+ => => transferring context: 720B                                                                                                                                                                         0.0s 
+ => [1/4] FROM docker.io/library/node:10@sha256:59531d2835edd5161c8f9512f9e095b1836f7a1fcb0ab73e005ec46047384911                                                                                          0.0s 
+ => CACHED [2/4] WORKDIR /usr/src/app                                                                                                                                                                     0.0s 
+ => [3/4] COPY ./ ./                                                                                                                                                                                      0.0s 
+ => [4/4] RUN npm install                                                                                                                                                                                 3.0s 
+ => exporting to image                                                                                                                                                                                    0.2s 
+ => => exporting layers                                                                                                                                                                                   0.1s 
+ => => writing image sha256:7a16153e9cf6eac3350d42e34928b78daefc5cc44cebd63962a468e4c19983fc                                                                                                              0.0s 
+ => => naming to docker.io/library/nodejs-docker-compose-app_node-app                                                                                                                                     0.0s 
+Starting nodejs-docker-compose-app_redis-server_1 ... done
+Recreating nodejs-docker-compose-app_node-app_1   ... done
+Attaching to nodejs-docker-compose-app_redis-server_1, nodejs-docker-compose-app_node-app_1
+redis-server_1  | 1:C 25 Jul 2021 06:28:23.736 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-server_1  | 1:C 25 Jul 2021 06:28:23.736 # Redis version=6.2.4, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.737 * monotonic clock: POSIX clock_gettime                                                        le use redis-server /path/to/redis.conf
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.737 * Running mode=standalone, port=6379.
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.737 # Server initialized
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.737 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. 
+To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for tTo fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.cohis to take effect.
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.738 * Loading RDB produced by version 6.2.4
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.738 * RDB age 17 seconds
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.738 * RDB memory usage when created 0.79 Mb
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.738 * DB loaded from disk: 0.000 seconds
+redis-server_1  | 1:M 25 Jul 2021 06:28:23.738 * Ready to accept connections
+node-app_1      | server is running...
+```
+
 ---
 
 ## 6. Docker Compose로 컨테이너를 멈추기
+
+도커 컴포즈를 통해 작동시킨 컨테이너들을 한꺼번에 중단하려면 다음과 같이 입력한다.
+
+```bash
+$ docker compose down
+```
+
+### docker-compose up에서 `--build` 옵션의 차이
+
+-   없으면, 이미지가 없을 때 이미지를 빌드하고 컨테이너를 시작
+-   있으면, 이미지가 있든 없든 이미지를 빌드하고 컨테이너 시작
+
+`-d`(detached) 옵션을 붙이면 컨테이너가 백그라운드에서 실행된다.
+
+```bash
+$ docker-compose up -d --build
+Building node-app
+[+] Building 2.0s (10/10) FINISHED
+ => [internal] load build definition from Dockerfile                                                                                                                                    0.0s
+ => => transferring dockerfile: 31B                                                                                                                                                     0.0s
+ => [internal] load .dockerignore                                                                                                                                                       0.0s
+ => => transferring context: 2B                                                                                                                                                         0.0s
+ => [internal] load metadata for docker.io/library/node:10                                                                                                                              1.9s
+ => [auth] library/node:pull token for registry-1.docker.io                                                                                                                             0.0s
+ => [1/4] FROM docker.io/library/node:10@sha256:59531d2835edd5161c8f9512f9e095b1836f7a1fcb0ab73e005ec46047384911                                                                        0.0s
+ => [internal] load build context                                                                                                                                                       0.0s
+ => => transferring context: 129B                                                                                                                                                       0.0s
+ => CACHED [2/4] WORKDIR /usr/src/app                                                                                                                                                   0.0s
+ => CACHED [3/4] COPY ./ ./                                                                                                                                                             0.0s
+ => CACHED [4/4] RUN npm install                                                                                                                                                        0.0s
+ => exporting to image                                                                                                                                                                  0.0s
+ => => exporting layers                                                                                                                                                                 0.0s
+ => => writing image sha256:7a16153e9cf6eac3350d42e34928b78daefc5cc44cebd63962a468e4c19983fc                                                                                            0.0s
+ => => naming to docker.io/library/nodejs-docker-compose-app_node-app                                                                                                                   0.0s
+Starting nodejs-docker-compose-app_node-app_1     ... done                                                                                                                                   Starting nodejs-docker-compose-app_redis-server_1 ... done
+
+$ docker ps
+CONTAINER ID   IMAGE                                COMMAND                  CREATED          STATUS         PORTS                                       NAMES
+d92236fad8cc   nodejs-docker-compose-app_node-app   "docker-entrypoint.s…"   10 minutes ago   Up 3 seconds   0.0.0.0:5000->8080/tcp, :::5000->8080/tcp   nodejs-docker-compose-app_node-app_1
+cea4344ee82a   redis                                "docker-entrypoint.s…"   12 minutes ago   Up 3 seconds   6379/tcp                                    nodejs-docker-compose-app_redis-server_1
+```
+
+docker compose를 사용하면 연결되어 있는 두 개의 컨테이너를 같이 실행한다.
+또한 `docker-compose up -d`로 실행하면
+`docker-compose down` 후에 image도 안 남긴다.
