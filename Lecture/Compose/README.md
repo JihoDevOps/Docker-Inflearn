@@ -92,6 +92,41 @@ app.get('/', (req, res) => {
 
 ## 3. Dockerfile 작성하기
 
+Node.js를 위한 이미지를 만들기 위해 dockerfile을 작성한다.
+저번에 만든 node basic app에서 작성한 것과 동일하게 작성한다.
+
+##### 저번에 작성한 dockerfile
+
+```dockerfile
+# Base Image
+FROM node
+
+# Working Directory
+WORKDIR /usr/src/app
+
+# 우선 node module들을 다운받는다.
+# 이때 종속성에 대한 변동사항이 없었다면,
+# 캐시되어 있는 이미지로 인해 속도가 개선된다.
+COPY package*.json ./
+
+RUN npm install
+
+# 현재 디렉토리에 있는 모든 파일들을 컨테이너에 복사한다.
+COPY ./ ./
+
+CMD ["node", "server.js"]
+```
+
+### dockerfile
+
+```dockerfile
+FROM    node:10
+WORKDIR /usr/src/app
+COPY    ./ ./
+RUN     npm install
+CMD     ["node", "server.js"]
+```
+
 ---
 
 ## 4. Docker Containers 간 통신할 때 나타나는 에러
