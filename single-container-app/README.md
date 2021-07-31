@@ -175,6 +175,33 @@ $ docker run -it -d -p 3000:3000 [image name]
 
 ### 5. 도커 볼륨을 이용한 소스 코드 변경
 
+#### Volume 복습
+
+>   Local에서 코드를 수정하면
+>   다시 이미지를 빌드하지 않아도 컨테이너에 적용되는 방법이다.
+
+예전 강의에서 이미 `COPY` 대신 `VOLUME`을 이용해서
+소스를 변경했을 때 다시 이미지를 빌드하지 않아도
+변경한 소스 부분이 어플리케이션에 반영되는 부분을 해봤다.
+
+**Volume**은 Local에 있는 파일을 Conatiner가 참조하도록 한다.
+
+```bash
+# MacOS
+$ docker run -p 3000:3000 -v [workdir]/node_modules -v $(pwd):[workdir] [image]
+# Windows
+$ docker run -p 3000:3000 -v [workdir]/node_modules -v %cd%:[workdir] [image]
+```
+
+> 현재 제대로 동작하지 않고 있다.
+> 실시간으로 변경되는 것이 확인되지 않는다.
+> dockerfile.dev에서 `npm run start` 대신 `npm run serve`로 바꿨다.
+> 그래도 실시간으로 소스 수정이 적용되지 않았다.
+
+> 다시 시도하고 있는데, `npm run serve`에서 오류가 발생한다.
+> 다시 되돌렸고, build 폴더를 지웠다. 그래도 해결되지 않았다.
+> 어차피 compose 쓸 거니까 일단 넘어간다.
+
 ---
 
 ### 6. 도커 컴포즈로 좀 더 간단하게 앱 실행하기
