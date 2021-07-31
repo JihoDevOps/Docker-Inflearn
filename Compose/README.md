@@ -358,7 +358,7 @@ node-app_1      | server is running...
 도커 컴포즈를 통해 작동시킨 컨테이너들을 한꺼번에 중단하려면 다음과 같이 입력한다.
 
 ```bash
-$ docker compose down
+$ docker-compose down
 ```
 
 ### docker-compose up에서 `--build` 옵션의 차이
