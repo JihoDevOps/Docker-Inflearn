@@ -141,6 +141,8 @@ dockerfile을 자동으로 찾아서 빌드한다.
 
 ```bash
 $ docker build -f dockerfile.dev .
+# 웬만하면 이름을 부여하고 빌드하자...
+$ docker build -f dockerfile.dev -t jiho/react-app .
 ```
 
 #### tip
@@ -151,6 +153,23 @@ Local에는 node_modules 디렉토리가 필요 없다.
 ---
 
 ### 4. 생성된 도커 이미지로 리액트 앱 실행하기
+
+docker의 port와 local의 port를 매핑하여 실행한다.
+
+```bash
+$ docker run -p 3000:3000 [image name]
+```
+
+> 또 안 된다고 하는데 나는 지금 잘 된다.
+> 일단은 `-it` 옵션을 붙여줘야 한다고 한다.
+> docker 또는 react 버전에 따라 다르다.
+
+```bash
+# -it 옵션은 환경에 따라 필수는 아니다.
+$ docker run -it -p 3000:3000 [image name]
+# -d 옵션은 백그라운드에서 실행해준다.
+$ docker run -it -d -p 3000:3000 [image name]
+```
 
 ---
 
