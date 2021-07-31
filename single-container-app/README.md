@@ -206,6 +206,40 @@ $ docker run -p 3000:3000 -v [workdir]/node_modules -v %cd%:[workdir] [image]
 
 ### 6. 도커 컴포즈로 좀 더 간단하게 앱 실행하기
 
+volume의 장점은 알겠으나 command 명령어가 너무 길어진다.
+이러한 단점을 해결하기 위해 compose를 사용한다.
+
+```yml
+# docker-compose.yml
+
+version: "3"                        # docker compose version
+services:                           # 실행하려는 containers 정의
+  react:                            # container name
+    build:                          # 현재 dir에 있는 dockerfile 사용
+      context: .                    # 도커 이미지 구성 파일 경로
+      dockerfile: dockerfile.dev    # dockerfile 설정
+    ports:                          # 포트 매핑
+      - "3000:3000"
+    volumes:                        # local 머신에 있는 파일들 매핑
+      - /usr/src/app/node_modules
+      - ./:/usr/src/app
+    stdin_open: true                # 리액트 앱 종료 시 필요(버그 수정)
+```
+
+위 파일을 생성 후 다음과 같이 간단하게 실행할 수 있다.
+
+```bash
+$ docker-compose up
+$ docker-compose up --build # 다시 빌드하여 실행
+```
+
+> 아직도 실시간으로 수정이 되지 않는다.
+> 심지어 이전에 진행했던 프로젝트도 동일하다.
+> 환경설정의 문제라는 가능성이 커졌다.
+
+> 아무리 해도 고쳐지지 않는다...
+> 아이패드 배터리도 떨어졌다... 집에 가자...
+
 ---
 
 ### 7. 리액트 앱 테스트하기
