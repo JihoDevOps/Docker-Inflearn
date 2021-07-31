@@ -5,8 +5,12 @@ services:
       context: .
       dockerfile: dockerfile.dev
     ports:
-      - "3000:3000"
+      - "80:3000"
     volumes:
-      - /usr/src/app/node_modules
-      - ./:/usr/src/app
+      - /app/node_modules
+      - ./:/app
+    # Windows에서 실시간 반영을 위한 설정
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    # 기본 입력을 연결한다.
     stdin_open: true

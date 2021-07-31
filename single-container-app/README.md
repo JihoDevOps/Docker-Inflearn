@@ -240,6 +240,25 @@ $ docker-compose up --build # 다시 빌드하여 실행
 > 아무리 해도 고쳐지지 않는다...
 > 아이패드 배터리도 떨어졌다... 집에 가자...
 
+#### ❗❓ react는 추가 설정이 필요하다...
+
+그렇게 구글링해도 안 나오던 게
+[인프런](https://www.inflearn.com/questions/84167)에 있었다.
+
+> 등잔 밑이 어둡다.
+
+Windows OS에 한정되는 현상으로 보인다.
+진짜 Mac을 사는 게 맞는 걸까?
+별짓 다 했는데, 아래 코드 두 줄만 추가하면 된다.
+
+```dockerfile
+  react:
+    # ...
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    # ...
+```
+
 ---
 
 ### 7. 리액트 앱 테스트하기

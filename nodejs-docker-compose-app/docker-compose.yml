@@ -4,5 +4,8 @@ services:
     image: "redis"
   node-app:
     build: .
+    volumes:
+      - /usr/src/app/node_modules
+      - ./:/usr/src/app
     ports:
       - "5000:8080"
