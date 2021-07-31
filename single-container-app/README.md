@@ -103,6 +103,51 @@ $ npm run build
 
 ### 3. 도커를 이용하여 리액트 앱 실행하기
 
+#### Dockerfile의 종류
+
+이전까지 dockerfile 하나로 진행했다.
+하지만 실제 개발 환경에서는 `개발 환경`과 `배포 환경`을 구분한다.
+따라서 개발 단계에서는 `dockerfile.dev`를 작성한다.
+내용은 기존과 동일하게 작성하면 된다.
+
+```dockerfile
+# dockerfile.dev
+FROM node:alpine
+WORKDIR /usr/src/app
+COPY package.json ./
+RUN npm install
+COPY ./ ./
+CMD ["npm", "run", "start"]
+```
+
+위처럼 작성하고 빌드하면 다음과 같은 메시지가 출력된다.
+
+```bash
+$ docker build ./
+unable to prepare context: unable to evaluate symlinks in Dockerfile path: CreateFile C:\Dev\Workspace\Inflearn\Docker-Inflearn\single-container-app\Dockerfile: The 
+system cannot find the file specified.
+```
+
+#### unable to evaluate symlink ...
+
+해당 에러가 발생하는 이유는
+이미지를 빌드할 때 해당 디렉터리만 지정하면
+dockerfile을 자동으로 찾아서 빌드한다.
+하지만 현재 dockerfile은 없고, dockerfile.dev만 존재한다.
+즉, 자동으로 dockerfile을 찾지 못해 발생하는 에러다.
+
+해결책은 임의로 빌드 시 어떤 파일을 참조하는지 지정하면 된다.
+아래처럼 입력하면 된다.
+
+```bash
+$ docker build -f dockerfile.dev .
+```
+
+#### tip
+
+Local에는 node_modules 디렉토리가 필요 없다.
+그냥 과감히 node_modules 폴더를 지워도 도커에서는 잘 돌아간다.
+
 ---
 
 ### 4. 생성된 도커 이미지로 리액트 앱 실행하기
