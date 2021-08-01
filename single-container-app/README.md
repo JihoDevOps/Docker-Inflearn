@@ -263,9 +263,46 @@ Windows OS에 한정되는 현상으로 보인다.
 
 ### 7. 리액트 앱 테스트하기
 
+Image가 build 된 상황에서 다음과 같이 명령어를 입력하면
+docker 환경에서 테스트를 진행할 수 있다.
+
+```bash
+$ docker run -it [image] npm run test
+# -it : 테스트 결과를 보기 편하게 하는 설정
+```
+
+테스트 코드 또한 compose되어 Local에서 수정하여
+실시간으로 반영되게 설정하는 방법이 있다.
+
+기존 방법과 유사하게 volume을 이용하고,
+`docker-compose.yml`에 설정을 추가한다.
+
+```yml
+tests:
+  build:
+    context: .
+    dockerfile: dockerfile.dev
+  volumes:                   # 디렉터리 맵핑
+    - [workdir]/node_modules # Local과 연결하지 않는다.
+    - [target-dir]:[workdir] # 개발 dir과 docker dir을 연결한다.
+  command: ["npm", "run", "test"]
+```
+
+> 이 친구도 실시간 반영이 되지 않는다.
+> react app 처럼 chokidar 설정을 했지만 소용없었다.
+> 현재는 `jset`라는 종속성을 추가하여 빌드하고 있다.
+
 ---
 
 ### 8. 운영환경을 위한 Nginx
+
+운영 환경(배포 후)을 다룬다.
+
+#### Nginx가 필요한 이유
+
+##### 개발환경에서 React 실행
+
+
 
 ---
 
