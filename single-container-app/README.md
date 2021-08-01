@@ -343,6 +343,17 @@ tests:
 
 ### 9. 운영환경 도커 이미지를 위한 Dockerfile 작성하기
 
+Nginx를 포함하는 React 운영 환경 이미지 생성을 위해
+`dockerfile`을 작성한다.
+
+`dockerfile.dev`는 개발 환경을 위한 설정이고,
+`dockerfile`은 운영 환경을 위한 설정이다.
+
+둘의 설정 차이는 크게 `CMD` 부분이다.
+`dockerfile.dev`는 `npm run start`이지만,
+`dockerfile`은 `npm run build`로 설정한다.
+빌드된 파일을 Nginx 서버가 읽고 브라우저에 보여준다.
+
 ---
 
 ## B. 테스트 배포 부분
