@@ -510,5 +510,14 @@ EB는 EC2 인스턴스나 데이터베이스 같이 많은 것들을 포함한 "
 구성하며 만들고 있는 소프트웨어를 업데이트를 할 때마다 자동으로 관리한다.
 
 ### 6. Elastic Beanstalk 환경 구성하기
+
+EB에는 로드밸런서가 있기 때문에 트래픽 양에 따라
+자동적으로 EC2 유닛을 관리해준다.
+
+-   실행 버전: Sample Application
+-   플랫폼
+    -   Docker
+    -   64bit Amazon Linux/2.16.11
+
 ### 7. travis yml 파일 작성하기 (배포)
 ### 8. Travis CI의 AWS 접근을 위한 API 생성
