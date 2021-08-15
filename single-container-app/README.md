@@ -421,6 +421,22 @@ Private repository는 유료로 일정 금액을 지불하여 사용한다.
 5.  테스트 실행 후 성공 시 AWS와 같은 호스팅 사이트로 보내 배포
 
 ### 3. Travis CI 이용 순서
+
+#### Travis CI 이용 순서
+
+GitHub에 Push 시 Travis CI에서 그 소스를 가져가야 한다.
+GitHub과 Travis CI 연결이 필요하다.
+
+1.  Travis CI 사이트 방문 및 가입
+2.  `.travis.yml` 파일 작성하여 설정 완료
+
+GitHub에서 Travis CI로 소스를 어떻게 전달할 것인지,
+전달 받은 소스를 어떻게 테스트 할 것인지,
+테스트가 성공하고 어떻게 AWS에 배포할 것인지를 설정해야 한다.
+
+`docker-compose.yml`과 비슷하게 `.travis.yml`로 설정한다.
+
+
 ### 4. travis yml 파일 작성하기 (테스트)
 ### 5. AWS 알아보기
 ### 6. Elastic Beanstalk 환경 구성하기
