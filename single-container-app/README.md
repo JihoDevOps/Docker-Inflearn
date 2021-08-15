@@ -400,6 +400,26 @@ nginx가 웹 브라우저의 http 요청이 올 때마다 알맞은 파일을 �
 2.  Travis CI 연결
 
 ### 2. Travis CI 설명
+
+Travis CI는 GitHub에서 진행하는 오픈소스 프로젝트를 위한
+지속적인 통합(Continuous Integration) 서비스이다.
+2011년 설립되어 2012년 급성장했다.
+기존에는 Ruby 언어만 지원했으나 현재 대부분 개발 언어를 지원한다.
+Travis CI를 이용하면 GitHub repository에 있는 프로젝트를
+특정 이벤트에 따라 자동으로 테스트, 빌드 및 배포할 수 있다.
+Private repository는 유료로 일정 금액을 지불하여 사용한다.
+
+#### Travis CI Flow
+
+>   Local Git → GitHub → Travis CI → AWS
+
+1.  Local Git에 있는 소스를 GitHub 저장소에 Push
+2.  GitHub master branch에 push 이벤트 발생 시
+    Travis CI에게 소스가 Push 되었다고 알림
+3.  Travis CI는 업데이트 된 소스를 GitHub에서 가져옴
+4.  GitHub에서 가져온 소스의 테스트 코드 실행
+5.  테스트 실행 후 성공 시 AWS와 같은 호스팅 사이트로 보내 배포
+
 ### 3. Travis CI 이용 순서
 ### 4. travis yml 파일 작성하기 (테스트)
 ### 5. AWS 알아보기
