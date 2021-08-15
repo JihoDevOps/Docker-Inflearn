@@ -354,6 +354,42 @@ Nginx를 포함하는 React 운영 환경 이미지 생성을 위해
 `dockerfile`은 `npm run build`로 설정한다.
 빌드된 파일을 Nginx 서버가 읽고 브라우저에 보여준다.
 
+운영 환경을 위한 Dockerfile을 요약하자면 2 단계로 이루어진다.
+
+1.  (Builder Stage) 빌드 파일들을 생성한다.
+2.  (Run Stage) Nginx를 가동하고 빌드 파일들을 브라우저로 제공한다.
+
+#### Builder Stage
+
+```dockerfile
+# 이 FROM부터 다음 FROM까지는 Builder Stage
+FROM node:alpine as builder
+WORKDIR /usr/src/app
+COPY package.json .
+RUN npm install
+COPY . .
+RUN ["npm", "run", "build"]
+# 빌드 결과물은 WORKDIR/build에 생성된다.
+```
+
+#### Run Stage
+
+```dockerfile
+FROM nginx
+COPY --from=builder /app/build /usr/share/nginx/html
+# --from=builder: Stage 명시
+```
+
+builder stage에서 생성된 파일들은 `/usr/src/app/build`에 들어가게 되며
+그곳에 저장된 파일들을 `/usr/share/nginx/html`로 복사한다.
+nginx가 웹 브라우저의 http 요청이 올 때마다 알맞은 파일을 전달한다.
+
+`/usr/share/nginx/html`로 파일들을 복사하는 이유는
+이 장소로 파일을 위치하면 Nginx가 알아서 Client에서 요청에 대응한다.
+이 장소는 설정을 통해 변경 가능하다.
+
+>   애초에 npm build를 저기에 해도 되잖아?
+
 ---
 
 ## B. 테스트 배포 부분
