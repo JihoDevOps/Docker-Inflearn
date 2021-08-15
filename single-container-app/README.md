@@ -438,6 +438,47 @@ GitHub에서 Travis CI로 소스를 어떻게 전달할 것인지,
 
 
 ### 4. travis yml 파일 작성하기 (테스트)
+
+1.  Test를 수행하기 위한 준비
+    -   도커 환경에서 리액트 앱을 실행하고 있으니
+        Travis CI에서도 도커 환경 구성
+    -   구성된 도커 환경에서 Dockerfile.dev로 도커 이미지 생성
+2.  Test 수행
+    -   어떻게 Test를 수행할 것인지 설정
+3.  AWS로 배포하기
+    -   어떻게 AWS에 소스코드를 배포할 것인지 설정하기
+
+```yml
+# 관리자 권한 설정
+sudo: required
+
+# 언어 플랫폼 선택
+language: generic
+
+# Docker 환경 구성
+services:
+  - docker
+
+# Scipt 실행 전 필요한 수행 - 이미지 빌드
+before_install:
+  - echo "Start creating on image with dockerfile"
+  - docker build -t jiho/docker-react-app -f dockerfile.dev .
+
+# Script로 테스트 실행
+script:
+  - docker run -e CI=true jiho/docker-react-app npm run test -- --coverage
+
+# 테스트 성공 후 필요한 수행 - 로그 찍기
+after_success:
+  - echo "Test Success"
+```
+
+#### Repository가 Organization에 있을 경우
+
+Organization을 등록하고, Free Plan을 등록해야만 알아먹는다.
+아직 Travis Documents에 토글이 있다고 하는데 지금은 없다.
+그래서 혼동이 왔으나 역시나 스택 오버플로우가 나를 도왔다.
+
 ### 5. AWS 알아보기
 ### 6. Elastic Beanstalk 환경 구성하기
 ### 7. travis yml 파일 작성하기 (배포)
