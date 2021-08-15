@@ -554,3 +554,69 @@ deploy:
 >   철자에 주의하자.
 
 ### 8. Travis CI의 AWS 접근을 위한 API 생성
+
+현재까지 Travis CI에서 AWS에 어떤 파일을 전해줄 것인지,
+AWS에서 어떤 서비스를 이용할 것인지 부수적인 설정을 했다.
+
+Travis와 AWS가 실질적으로 소통을 할 수 있게 인증 부분을 작성한다.
+
+#### 소스 파일을 전달하기 위한 접근 요건
+
+GitHub → Travis CI → AWS
+
+-   Travis CI 아이디 로그인 시 GitHub 연동으로 인증
+-   AWS에서 제공하는 Secret Key를 `.travis.yml`에 작성
+
+#### Secret, Access API Key 발급
+
+인증을 위해 API Key를 발급해야 한다.
+
+##### 1. IAM USER 생성
+
+##### IAM(Identity and Access Management)
+
+-   AWS 리소스에 대한 액세스를 안전하게 제어할 수 있는
+    웹 서비스
+-   IAM을 사용하여 리소스를 사용하도록 인증(로그인) 및
+    권한 부여된 대상을 제어
+-   Root 사용자
+    -   현재 우리가 처음 가입하여 사용하고 있는 계정
+    -   AWS 서비스 및 리소스에 대한 완전한 액세스 권한이 있음
+-   IAM 사용자
+    -   root 사용자가 부여한 권한만 가진다.
+
+>   `AWSElasticBeanstalkFullAccess`가 없어
+>   `AdministratorAccess-AWSElasticBeanstalk`으로 설정했다.
+
+>   보안을 위해 새로 계정을 생성하는 것
+
+Dashboard → IAM 검색 → 사용자 클릭 → 사용자 추가 클릭
+
+##### 2. API Key를 `.travis.yml`에 작성하기
+
+-   직접 API Key를 `.travis.yml`에 작성하면 노출되므로
+    다른 곳에 작성하고 그것을 가져와야 한다.
+-   Travis 웹사이트 해당 저장고 대시보드 방문
+-   설정 클릭
+-   AWS에서 받은 API Keys를 Name과 Value에 적어서 관리한다.
+-   Travis CI 웹사이트에서 보관 중인 Keys를
+    로컬 환경에서 가지고 올 수 있게 `.travis.tml` 파일에 설정
+
+```yml
+deploy:
+  ...
+  # Key(Travis의 환경 변수) 등록
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+```
+
+`dockerfile`에서 포트 매핑 추가
+
+```dockerfile
+...
+FROM nginx
+EXPOSE 80
+COPY ...
+```
+
+Nginx가 80번 포트로 동작하기 때문에 이 설정이 필요하다.
