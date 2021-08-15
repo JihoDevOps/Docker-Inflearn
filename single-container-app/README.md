@@ -520,4 +520,37 @@ EB에는 로드밸런서가 있기 때문에 트래픽 양에 따라
     -   64bit Amazon Linux/2.16.11
 
 ### 7. travis yml 파일 작성하기 (배포)
+
+#### `.travis.yml` 파일 작성하기 (배포 부분)
+
+현재는 도커 이미지를 생성 후 애플리케이션을 테스트만 진행한다.
+테스트에 성공하면 AWS EB에 자동으로 배포하는 부분을 작성한다.
+
+```yml
+deploy:
+  # 외부 서비스 표시: s3, elasticbeanstalk, firebase 등
+  provider: elasticbeanstalk
+  # 현재 사용하고 있는 AWS의 서비스가 위치하고 있는 물리적 장소
+  region: "ap-northeast-2"
+  # 생성된 애플리케이션의 이름
+  app: "docker-react-app"
+  # Elastic BeanStalk Environment 이름
+  env: "Dockerreactapp-env"
+  # 해당 elasticbeanstalk을 위한 s3 버켓 이름
+  # s3: 파일들을 저장하는 곳
+  # Travis가 build 파일을 압축하여 s3로 전송하기 때문에 필요하다.
+  # s3는 EB 생성 시 알아서 생성되어 있다.
+  # aws console에서 s3 검색하면 이미 존재하는 인스턴스를 확인한다.
+  bucket_name: "elasticbeanstalk-ap-northeast-2-869075270387"
+  # 애플리케이션 이름과 동일하다.
+  # 자세한 설명은 따로 찾아보자.
+  bucket_path: "docker-react-app"
+  # GitHub 설정
+  on:
+    # 어떤 branch에서 Push 이벤트 발생 시 AWS에 배포할 것인지
+    branch: master
+```
+
+>   철자에 주의하자.
+
 ### 8. Travis CI의 AWS 접근을 위한 API 생성
