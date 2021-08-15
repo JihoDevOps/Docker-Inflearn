@@ -395,6 +395,10 @@ nginx가 웹 브라우저의 http 요청이 올 때마다 알맞은 파일을 �
 ## B. 테스트 배포 부분
 
 ### 1. 섹션 설명 및 Github에 소스 코드 올리기
+
+1.  GitHub 새로운 Repo에 react-app push
+2.  Travis CI 연결
+
 ### 2. Travis CI 설명
 ### 3. Travis CI 이용 순서
 ### 4. travis yml 파일 작성하기 (테스트)
