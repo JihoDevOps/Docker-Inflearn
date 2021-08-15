@@ -480,6 +480,35 @@ Organization을 등록하고, Free Plan을 등록해야만 알아먹는다.
 그래서 혼동이 왔으나 역시나 스택 오버플로우가 나를 도왔다.
 
 ### 5. AWS 알아보기
+
+1.  [AWS 사이트 방문](https://aws.amazon.com)
+2.  회원가입 및 신용카드 정보 등록
+3.  AWS Dashboard
+4.  Elastic BeanStalk 검색
+
+#### What is EC2?
+
+>   Elastic Compute Cloud
+
+Amazon Elastic Computed Cloud는 Amazon Web Services(AWS) 클라우드에서
+확장식 컴퓨팅을 제공합니다.
+Amazon EC2를 사용하면 하드웨어에 선투자할 필요가 없어
+더 빠르게 애플리케이션을 개발하고 배포할 수 있습니다.
+Amazon EC2는 요구 사항이나 갑작스러운 인기 증대 등
+변동 사항에 따라 신속하게 규모를 확장하거나 축소할 수 있어
+서버 트래픽 예측 필요성이 줄어듭니다.
+
+#### What is EB?
+
+>   Elastic BeanStalk
+
+AWS Elasic BeanStalk는 Apache, Nginx같은 친숙한 서버에서
+Java, NET, PHP, Node.js, Python, Ruby, Go 및 Docker와 함꼐
+개발된 웹 응용 프로그램 및 서비스를 배포하고 확장하기 쉬운 서비입니다.
+
+EB는 EC2 인스턴스나 데이터베이스 같이 많은 것들을 포함한 "환경"을
+구성하며 만들고 있는 소프트웨어를 업데이트를 할 때마다 자동으로 관리한다.
+
 ### 6. Elastic Beanstalk 환경 구성하기
 ### 7. travis yml 파일 작성하기 (배포)
 ### 8. Travis CI의 AWS 접근을 위한 API 생성
