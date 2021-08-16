@@ -579,6 +579,42 @@ COPY default.conf /etc/nginx/conf.d/default.conf
 
 ### 10. Docker Volume을 이용한 데이터 베이스 데이터 유지하기
 
+```yml
+mysql:
+  build: ./mysql
+  restart: unless-stopped
+  container_name: app_mysql
+  ports:
+    - 3306:3306
+  volumes:
+    - ./mysql/mysql_data:/var/lib/mysql
+    - ./mysql/sql:/docker-entrypoint-initdb.d/
+  environment:
+    MYSQL_ROOT_PASSWORD: 1234
+    MYSQL_DATABASE: myapp
+```
+
+위에 volumes 부분이 무엇을 의미하는지 알아보자.
+현재까지는 volume을 사용한 용도가 리액트나 노드에서
+코드를 업데이트 할 때 바로 그 코드가 적용되게 할 때 사용했다.
+여기서는 DB의 내용을 지금 컴퓨터에 저장해서
+Docker Container가 사라져도 DB의 영속성은 유지되도록
+따로 관리하는 방식이다.
+
+>   그냥 데이터를 날려도 된다면 volume 설정을 안 해도 되겠지
+
+1.  이미지로 컨테이너 생성
+2.  컨테이너 생성 후 읽기 전용
+3.  컨테이너 안에서의 변화
+4.  변화된 데이터를 컨테이너 안에 저장
+5.  컨테이너 삭제 시 컨테이너 안의 데이터 또한 삭제
+
+이러한 문제 때문에 영속성이 필요한 데이터의 경우는
+기존에 설정한 것처럼 volume을 사용한다.
+하지만 추후 AWS RDS로 관리한다.
+
+>   이러한 방식을 **호스트 파일 시스템**이라고 한다.
+
 ---
 
 ## B. 테스트 배포 부분
