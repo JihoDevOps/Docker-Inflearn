@@ -54,6 +54,92 @@ Client의 요청은 Proxy 서버가 받아 로드 밸런싱과 유사한 기능�
 하지만 Proxy 서버를 사용한다는 것부터 환경 설정이 다소 복잡하다.
 
 ### 2. Node JS 구성하기
+
+1.  `npm init`으로 backend 폴더에 Project를 생성한다.
+2.  `package.json` 파일을 수정한다.
+    ```json
+    {
+      "name": "backend",
+      "version": "1.0.0",
+      "description": "",
+      "main": "index.js",
+      "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js",
+        // nodemon을 이용하여 express 서버를 시작할 떄 사용
+        "dev": "nodemon server.js"
+      },
+      "author": "jihogrammer",
+      "license": "ISC",
+      "dependencies": {
+        "express": "^4.16.3",
+        "mysql": "^2.16.0",
+        "nodemon": "^1.18.3",
+        // Client에서 오는 요청의 본문을 해석하는 미들웨어
+        "body-parser": "^1.19.0"
+      }
+    }
+    ```
+3.  `server.js` 작성
+    ```js
+    // 필요한 모듈들을 가져오기
+    const expresss = require("express");
+    const bodyParser = require("body-parser");
+
+    // express 서버 생성
+    const app = expresss();
+
+    // JSON 형태로 오는 요청의 본문을 해석할 수 있게 설정
+    app.use(bodyParser.json());
+
+    app.listen(5000, () => {
+        console.log("애플리케이션이 5000번 포트에서 시작되었습니다.");
+    });
+    ```
+4.  `db.js` 작성하고 `server.js`에 등록
+    ```js
+    const mysql = require("mysql");
+    const pool = mysql.createPool({
+        connectionLimit: 10,
+        host: "mysql",
+        user: "root",
+        password: "1234",
+        database: "myapp"
+    });
+
+    exports.pool = pool;
+    ```
+    ```js
+    ...
+    const bodyParser = require("body-parser");
+
+    const db = require("./db");
+
+    const app = expresss();
+    ...
+    ```
+5.  애플리케이션에 필요한 두 가지 API 작성
+    ```js
+    // DB list 테이블에 있는 모든 데이터를 프론트에 보낸다.
+    app.get("/api/values", function (req, res) {
+        // DB에서 모든 정보 가져오기
+        db.pool.query("SELECT * FROM list;",
+            (err, results, fields) => {
+                if (err) return res.status(500).send(err);
+                return res.json(results)
+            })
+    });
+
+    // Client에서 입력한 값을 DB에 Insert
+    app.post("/api/value", (req, res, next) => {
+        db.pool.query(`INSERT INTO list (value) VALUES("${req.body.value}")`,
+            (err, results, fields) => {
+                if (err) return res.status(500).send(err);
+                return res.json({ success: true, value: req.body.value });
+            })
+    });
+    ```
+
 ### 3. React JS 구성하기
 ### 4. 리액트 앱을 위한 도커 파일 만들기
 ### 5. 노드 앱을 위한 도커 파일 만들기
