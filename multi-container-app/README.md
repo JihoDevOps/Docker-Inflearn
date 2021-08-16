@@ -141,6 +141,155 @@ Client의 요청은 Proxy 서버가 받아 로드 밸런싱과 유사한 기능�
     ```
 
 ### 3. React JS 구성하기
+
+1.  `npx create-react-app frontend` 명령어로 프로젝트 생성
+2.  frontend의 `App.js`에서 `input`과 `button` 생성
+    ```html
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <div className="container">
+          <form className="example" onSubmit>
+            <input
+              type="text"
+              placeholder="입력해주세요..."
+            />
+            <button type="submit">확인</button>
+          </form>
+        </div>
+      </header>
+    </div>
+    ```
+3.  `App.css`에 스타일 추가
+    ```css
+    .container {
+        width: 375px;
+    }
+
+    form.example input {
+        padding: 10px;
+        font-size: 17px;
+        border: 1px solid gray;
+        float: left;
+        width: 74%;
+        background: #f1f1f1;
+    }
+
+    form.example button {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background: #2196F3;
+        color: white;
+        font-size: 17px;
+        border: 1px solid gray;
+        border-left: none;
+        cursor: pointer;
+    }
+
+    form.example button:hover {
+        background: #0b7dda;
+    }
+
+    form.example::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+    ```
+4.  데이터 흐름을 위한 State 생성
+    ```js
+    // useState를 사용하기 위해 react 라이브러리에서 받아옴
+    import React, { useState } from "react";
+    import axios from "axios";
+    import logo from "./logo.svg";
+    import "./App.css";
+
+    function App() {
+        // DB의 값을 가져와 화면에 보여주기 위해 State에 준비
+        const [list, setList] = useState([]);
+        // input 박스에 입력한 값이 이 state에 들어감
+        const [value, setValue] = useState("");
+        ...
+    }
+    ```
+5.  DB에서 데이터를 가져오기 위해 useEffect 적용
+    ```js
+    import React, { useState, useEffect } from "react";
+    ...
+    function App() {
+        const [list, setList] = useState([]);
+        const [value, setValue] = useState("");
+        // 여기서 DB에 있는 값을 읽는다.
+        useEffect(() => {
+            
+        }, [])
+    }
+    ```
+6.  기타 다른 부분 처리하기
+    -   `/api/values`
+        ```js
+        useEffect(() => {
+            axios.get("/api/values")
+            .then(response => {
+                console.log(response);
+                setList(response.data);
+            });
+        }, [])
+        ```
+    -   `changeHandler`: input 박스에 입력할 때
+        `onChange` 이벤트가 발생하면 value State를 변화시킴
+        ```js
+        const changeHandler = (event) => {
+            setValue(event.currentTarget.value);
+        };
+        ```
+        ```html
+        <input
+            type="text"
+            placeholder="입력해주세요..."
+            onChange={changeHandler}
+        />
+        ```
+    -   `submitHandler`: input 박스에 입력이 되면...
+        ```js
+        const submitHandler = (event) => {
+            event.preventDefault();
+            axios.post("/api/value", {value: value})
+                .then(response => {
+                    if (response.data.success) {
+                        console.log(response);
+                        setList([...list, response.data]);
+                        setValue("");
+                    } else {
+                        alert("데이터 DB 저장을 실패했습니다.")
+                    }
+                });
+        };
+        ```
+        ```js
+        // 확인 버튼 클릭 시 이벤트 호출
+        <form className="example" onSubmit={submitHandler}>
+        ```
+    -   list 목록 렌더링
+        ```js
+        { list && list.map((tuple, index) => (
+            <li key={index}>{tuple.value}</li>
+        ))}
+        ```
+    -   input 박스 변수에 매핑
+        ```js
+        // onChange: 값 입력할 때마다 이벤트 발생
+        // value: State의 value로 컨트롤
+        <input
+            type="text"
+            placeholder="입력해주세요..."
+            onChange={changeHandler}
+            value={value}
+        />
+        ```
+
+
 ### 4. 리액트 앱을 위한 도커 파일 만들기
 ### 5. 노드 앱을 위한 도커 파일 만들기
 ### 6. DB에 관해서
