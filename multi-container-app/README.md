@@ -411,6 +411,48 @@ DB 작업은 중요한 데이터들을 보관하고 이용하는 부분이다.
     ```
 
 ### 7. MySQL을 위한 도커 파일 만들기
+
+1.  `mysql` 디렉토리 생성 후 그 안에 `dockerfile` 생성
+2.  `dockerfile` 작성
+    ```dockerfile
+    # 베이스 이미지를 도커 허브에서 가져온다.
+    FROM mysql:5.7
+    ```
+3.  MySQL 시작 시 필요한 Schema 및 Table 생성  
+    `mysql/sql/initialize.sql` 생성
+4.  `initialize.sql` 작성
+    ```sql
+    DROP DATABASE IF EXISTS myapp;
+
+    CREATE DATABASE myapp;
+    USE myapp;
+
+    CREATE TABLE list (
+        id INTEGER AUTO_INCREMENT,
+        value TEXT,
+        PRIMARY KEY (id)
+    );
+    ```
+    `server.js`에 있는 Schema 생성 부분은 주석 처리
+5.  한글 인코딩 처리를 위해 `my.cnf` 파일 작성
+    ```bash
+    [mysqld]
+    character-set-server=utf8
+
+    [mysql]
+    defualt-character-set=utf8
+
+    [client]
+    defualt-character-set=utf8
+    ```
+6.  `dockerfile`에 `my.cnf` 추가
+    ```dockerfile
+    ADD my.cnf /etc/mysql/conf.d/my.cnf
+    ```
+7.  실행 후 mysql status를 보면
+    Server, DB, Client 등의 character set이
+    `latin1`에서 `utf8`로 변경된다.
+
 ### 8. Nginx를 위한 도커 파일 만들기
 ### 9. Docker Compose 파일 작성하기
 ### 10. Docker Volume을 이용한 데이터 베이스 데이터 유지하기
