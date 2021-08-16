@@ -289,8 +289,71 @@ Client의 요청은 Proxy 서버가 받아 로드 밸런싱과 유사한 기능�
         />
         ```
 
-
 ### 4. 리액트 앱을 위한 도커 파일 만들기
+
+1.  frontend 폴더에 dockerfile 생성
+2.  `dockerfile.dev`
+    ```dockerfile
+    # 베이스이미지를 도커허브에서 가져온다.
+    FROM node:alpine
+    # 해당 앱의 소스코드들이 위치하게 될 디렉토리
+    WORKDIR /app
+    # 소스코드가 바뀔 때마다 종속성까지 다시 복사하는 것을 막음
+    COPY package.json .
+    # 먼저 종속성을 다운받고 나머지 파일들을 복사
+    RUN npm install
+    # 종속성을 제외한 나머지 파일 복사
+    COPY . .
+    # 컨테이너 실행 시 사용할 명령어
+    CMD ["npm", "run", "start"]
+    ```
+3.  `dockerfile`
+    ```dockerfile
+    # Nginx가 제공할 빌드된 파일들을 생성
+    FROM node:alpine as builder
+    WORKDIR /app
+    COPY package.json .
+    RUN npm install
+    COPY . .
+    RUN npm run build
+
+    # Nginx로 위 stage에서 생성한 파일들을 제공
+    # default.conf 설정을 Nginx 컨테이너 안에 복사하여 설정 변경
+    FROM nginx
+    EXPOSE 3000
+    COPY ./nginx/default.conf /etc/nginx/conf.d/defalut.conf
+    COPY --from=builder /app/build /usr/share/nginx/html
+    ```
+
+#### Nginx
+
+현재 여기서 다루는 Nginx는 Proxy 서버가 아닌
+React를 위한 Nginx 서버에 대한 설정이다.
+`nginx/default.conf`에 대한 설명은 다음과 같다.
+
+```bash
+server {
+  listen 3000;
+
+  # "/" 요청으로 들어올 경우
+  location / {
+    # HTML 파일이 위치할 Root Directory 설정
+    root /usr/share/nginx/html;
+    # 사이트의 index 페이지로 설정할 파일명 설정
+    index index.html index.htm;
+    # React Router를 사용하여 페이지 간 이동 설정
+    try_files $uri $uri/ /index.html;
+  }
+}
+```
+
+`try_files $uri $uri/ /index.html;`은 React를 위한 설정이다.
+React는 SPA 기반의 FrontEnd Library로
+index.html 하나의 정적 파일을 가진다.
+만약 다른 uri로 접근 시도 시 nginx는 제대로 라우팅할 수 없다.
+따라서 React에서 설정하지 않은 url 요청이 들어올 경우
+예외 처리로 임의로 메인페이지로 이동하게 하는 설정이다.
+
 ### 5. 노드 앱을 위한 도커 파일 만들기
 ### 6. DB에 관해서
 ### 7. MySQL을 위한 도커 파일 만들기
