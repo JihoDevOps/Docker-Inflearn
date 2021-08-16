@@ -454,6 +454,58 @@ DB 작업은 중요한 데이터들을 보관하고 이용하는 부분이다.
     `latin1`에서 `utf8`로 변경된다.
 
 ### 8. Nginx를 위한 도커 파일 만들기
+
+>   Proxy Nginx에 대한 설정이다.
+
+현재 Nginx가 쓰이는 곳은 두 곳이다.
+하나는 Proxy, 다른 하나는 정적 파일을 제공하는 역할을 수행한다.
+Client의 요청이 정적 파일을 요청하는 것인지,
+API 호출을 요청하는 것인지 구분하여
+FrontEnd(React)와 BackEnd(Node express)로 보낸다.
+
+1. `default.conf` 작성
+```bash
+# "frontend", "backend" 이름은 docker-compose 파일에 명시한다.
+# docker 환경이 아닐 경우 IP를 직접 입력해야 한다.
+
+# 3000 포트에서 frontend가 동작한다는 것을 명시
+upstream frontend {
+  server frontend:3000;
+}
+# 5000 포트에서 backend가 동작한다는 것을 명시
+upstream backend {
+  server backend:5000;
+}
+server {
+  # Nginx 서버 포트를 80으로 개통
+  listen 80;
+  # location에는 우선 순위가 있다.
+  # "/"만 있을 경우 우선 순위가 가장 낮다.
+  # 여기서는 "/api"를 먼저 찾고 없다면 "/"에서 찾는다.
+  location / {
+    proxy_pass http://frontend;
+  }
+  # /api로 들어오는 요청을 backend로 보낸다.
+  location /api {
+    proxy_pass http://backend;
+  }
+  # 이 부분이 없을 경우 "개발 환경'에서 에러가 발생한다.
+  location /sockjs-node {
+    proxy_pass http://frontend;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+  }
+
+}
+```
+2.  `dockerfile` 작성
+```dockerfile
+FROM nginx
+# 작성한 설정 파일을 nginx에 넣어준다.
+COPY default.conf /etc/nginx/conf.d/default.conf
+```
+
 ### 9. Docker Compose 파일 작성하기
 ### 10. Docker Volume을 이용한 데이터 베이스 데이터 유지하기
 
