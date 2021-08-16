@@ -355,6 +355,28 @@ index.html 하나의 정적 파일을 가진다.
 예외 처리로 임의로 메인페이지로 이동하게 하는 설정이다.
 
 ### 5. 노드 앱을 위한 도커 파일 만들기
+
+1.  `dockerfile.dev`
+    ```dockerfile
+    FROM node:alpine
+    WORKDIR /app
+    COPY package.json .
+    RUN npm install
+    COPY . .
+    CMD ["npm", "run", "dev"]
+    ```
+    `start`가 아닌 `dev`인 이유는 코드 변경될 때마다
+    바로 반영을 시켜줄 수 있도록 nodemon이 관리하게 설정한다.
+2.  `dockerfile`
+    ```dockerfile
+    FROM node:alpine
+    WORKDIR /app
+    COPY package.json .
+    RUN npm install
+    COPY . .
+    CMD ["npm", "run", "start"]
+    ```
+
 ### 6. DB에 관해서
 ### 7. MySQL을 위한 도커 파일 만들기
 ### 8. Nginx를 위한 도커 파일 만들기
