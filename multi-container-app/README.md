@@ -507,6 +507,76 @@ COPY default.conf /etc/nginx/conf.d/default.conf
 ```
 
 ### 9. Docker Compose 파일 작성하기
+
+각 컨테이너를 위한 `dockerfile`을 작성했다.
+이제 각 컨테이너를 묶어서 사용할 `docker-compose.yml`을 작성한다.
+
+1.  `docker-compose.yml` 생성
+    ```yml
+    version: "3"
+    services:
+      frontend:
+      nginx:
+      backend:
+      mysql:
+    ```
+2.  `frontend` 부분 작성
+    ```yml
+    frontend:
+      # 개발 환경을 위한 dockerfile 위치 명시
+      build:
+        dockerfile: dockerfile.dev
+        context: ./frontend
+      # 코드 수정 시 바로 수정된 코드 반영을 위해 volume 사용
+      volumes:
+        - /app/node_modules
+        - ./frontend:/app
+      # React 종료 시 발생하는 버그를 잡음
+      stdin_open: true
+    ```
+3.  `nginx` 부분 작성
+    ```yml
+    nginx:
+      # 재시작 정책
+        # no - 어떠한 상황에서도 재시작하지 않는다.
+        # always - 항상 재시작
+        # on-failure - on-failure 에러 코드 발생 시만 재시작
+        # unless-stopped - 개발자가 임의로 멈출 때 빼고 항상 재시작
+      restart: always
+      build:
+        dockerfile: dockerfile
+        context: ./nginx
+      ports:
+        - 3000:80
+    ```
+4.  `backend` 부분 작성
+    ```yml
+    backend:
+      # 필수 아님
+      container_name: app_backend
+      build:
+        dockerfile: dockerfile.dev
+        context: ./backend
+      volumes:
+        - /app/node_modules
+        - ./backend:/app
+    ```
+5.  `mysql` 부분 작성
+    ```yml
+    mysql:
+      build: ./mysql
+      restart: unless-stopped
+      container_name: app_mysql
+      ports:
+        - 3306:3306
+      volumes:
+        - ./mysql/mysql_data:/var/lib/mysql
+        - ./mysql/sql:/docker-entrypoint-initdb.d/
+      environment:
+        MYSQL_ROOT_PASSWORD: 1234
+        MYSQL_DATABASE: myapp
+    ```
+
 ### 10. Docker Volume을 이용한 데이터 베이스 데이터 유지하기
 
 ---

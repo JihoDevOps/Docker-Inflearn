@@ -13,7 +13,8 @@ function App() {
       .then(response => {
         console.log(response);
         setList(response.data);
-      });
+      })
+      .catch(err => console.log(err));
   }, []);
 
   const changeHandler = (event) => {
@@ -31,7 +32,8 @@ function App() {
         } else {
           alert("데이터 DB 저장을 실패했습니다.")
         }
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   return (

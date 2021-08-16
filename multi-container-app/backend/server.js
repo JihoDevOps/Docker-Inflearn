@@ -11,22 +11,35 @@ app.use(bodyParser.json());
 //     id INTEGER AUTO_INCREMENT,
 //     value TEXT,
 //     PRIMARY KEY (id)
-// )`, (err, results, fields) => console.log("results: ", results));
+// );`, (err, results, fields) => {
+//     console.log("results: ", results);
+//     console.log(err);
+//     console.log(results);
+//     console.log(fields);
+// });
 
 app.get("/api/values", function (req, res) {
     db.pool.query("SELECT * FROM list;",
         (err, results, fields) => {
-            if (err) return res.status(500).send(err);
+            console.log(err);
+            console.log(results);
+            console.log(fields);
+            if (err) return res.status(500).send({err, msg: "왜?"});
             return res.json(results)
-        })
+        });
 });
 
-app.post("/api/value", (req, res, next) => {
-    db.pool.query(`INSERT INTO list (value) VALUES("${req.body.value}")`,
+app.post("/api/value", function (req, res, next) {
+    console.log(res);
+    console.log(req);
+    db.pool.query(`INSERT INTO list (value) VALUES("${req.body.value}");`,
         (err, results, fields) => {
-            if (err) return res.status(500).send(err);
+            console.log(err);
+            console.log(results);
+            console.log(fields);
+            if (err) return res.status(500).send({err, msg: "왜?"});
             return res.json({ success: true, value: req.body.value });
-        })
+        });
 });
 
 app.listen(5000, () => {
