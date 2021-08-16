@@ -378,6 +378,38 @@ index.html 하나의 정적 파일을 가진다.
     ```
 
 ### 6. DB에 관해서
+
+-   개발 환경 : 도커 환경 이용
+-   운영 환경 : AWS RDS 이용
+
+DB 작업은 중요한 데이터들을 보관하고 이용하는 부분이다.
+조금의 실수라도 안 좋은 결과를 초래할 수 있다.
+따라서 실제 중요한 데이터를 다루는 운영 환경에서는
+더욱 안정적인 AWS RDS를 이용하여 DB를 구성해본다.
+이 방법이 실제 실무에서 더 보편적으로 쓰이는 방법이다.
+
+-   개발 환경
+    ```text
+    Client -- Nginx --+-- Front (3000) --+-- Nginx
+                      |                  |
+                      |                  +-- static built files
+                      |
+                      +-- Server (5000) -- MySQL (3063)
+    ```
+-   운영 환경 : AWS Relational Database Service
+    ```text
+    < Elastic Beanstalk >
+    Client -- Nginx --+-- Front (3000) --+-- Nginx
+                      |                  |
+                      |                  +-- static built files
+                      |
+                      +-- Server (5000)
+                            |
+    ------------------------+----------------------------------
+    < AWS RDS >             |
+                          MySQL (3063)
+    ```
+
 ### 7. MySQL을 위한 도커 파일 만들기
 ### 8. Nginx를 위한 도커 파일 만들기
 ### 9. Docker Compose 파일 작성하기
