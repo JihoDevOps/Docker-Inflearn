@@ -836,6 +836,10 @@ Docker Daemon으로 전달된다.
 ```
 
 ### 8. 다중 컨테이너 앱을 위한 Elastic Beanstalk 환경 생성
+
+-   [docs](https://docs.aws.amazon.com/ko_kr/elasticbeanstalk/latest/dg/create_deploy_docker_v2config.html#create_deploy_docker_v2config_dockerrun)
+-   [link](http://docker-fullstack-app-linux2-env.eba-6b8gngmf.ap-northeast-2.elasticbeanstalk.com)
+
 ### 9. VPC 설정하기
 ### 10. MySQL을 위한 AWS RDS 생성하기
 ### 11. Security Group 생성하기
