@@ -887,6 +887,45 @@ VPC 안에 있는 AWS 서비스 간 트래픽을 모두 허용할 수 있도록
 Security Group을 허용한다.
 
 ### 10. MySQL을 위한 AWS RDS 생성하기
+
+우선 `docker-compose.yml`에서 RDS 관련 설정을 지정한다.
+
+```yml
+backend:
+  ...
+  environment:
+    MYSQL_HOST: mysql
+    MYSQL_USER: root
+    MYSQL_ROOT_PASSWORD: root1234
+    MYSQL_DATABASE: myapp
+    MYSQL_PORT: 3306
+```
+
+`db.js`에서 환경변수 읽어오는 설정으로 변경한다.
+
+```js
+const mysql = require("mysql");
+const pool = mysql.createPool({
+    connectionLimit: 10,
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: process.env.MYSQL_PORT
+});
+
+exports.pool = pool;
+```
+
+AWS에서 RDS 생성
+
+-   RDS 검색
+-   RDS 생성
+    -   MySQL 선택
+    -   RDS 이름 설정
+    -   사용자(root) 설정
+    -   기본 DB(myapp) 설정
+
 ### 11. Security Group 생성하기
 ### 12. Security Group 적용하기
 ### 13. EB와 RDS 소통을 위한 환경 변수 설정하기
