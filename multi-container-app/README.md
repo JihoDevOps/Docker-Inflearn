@@ -724,6 +724,57 @@ Add Environment Variables
     [확인](https://hub.docker.com)
 
 ### 6. Dockerrun aws json에 대하여
+
+`dockerrun.aws.json` 파일을 통해
+AWS Elastic Beanstalk에서 애플리케이션을 작동할 수 있다.
+
+#### 필요성
+
+하나의 dockerfile은 EB가 스스로 처리할 수 있다.
+하지만 지금 다루는 프로젝트처럼
+이미지가 여러 개인 경우 따로 설정이 필요하다.
+
+이번에는 Node, MySQL, Nginx 등을 위한 dockerfile이 각각 존재한다.
+따라서 EB가 어떤 행동을 취할지 설정해야 한다.
+
+#### 정의
+
+Docker 컨테이너 세트를 EB 애플리케이션으로 배포하는 방법을 설명하는
+Elastic Beanstalk 고유의 JSON 파일이다.
+`Dockerrun.aws.json` 파일을 멀티컨테이너 Docker 환경에서 사용한다.
+
+`Dockerrun.aws.json`은 환경에서 각 컨테이너
+인스턴스(Docker 컨테이너를 호스트하는 Amazon EC2 인스턴스)에
+배포할 컨테이너 및
+탑재할 컨테이너의 호스트 인스턴스에서 생성할 데이터 볼륨을 설명한다.
+
+#### 구조
+
+```bash
++ EB
+  + ECS (Elastic Container Service)
+    + Task
+      + Container
+```
+
+Task Definition, Container Definition을 명시해야 한다.
+
+#### Task Definition
+
+-   작업의 각 컨테이너에 사용할 도커 이미지
+-   각 작업 또는 작업 내 컨테이너에서 사용할 CPU 및 메모리의 양
+-   사용할 시작 유형으로서 해당 작업이 호스팅되는 인프라를 결정
+-   작업의 컨테이너에 사용할 도커 네트워킹 모드
+-   작업에 사용할 로깅 구성
+-   컨테이너가 종료 또는 실패하더라도 작업이 계속 실행될지 여부
+-   컨테이너 시작 시 컨테이너가 실행할 명령
+-   작업의 컨테이너에서 사용할 데이터 볼륨
+-   작업에서 사용해야 하는 IAM 역할
+
+이 작업 정의를 등록하려면 Container Definition을 명시해야 한다.
+그 Container Definition은 `dockerrun.aws.json`에 명시하여
+Docker Daemon으로 전달된다.
+
 ### 7. Dockerrun aws json 파일 작성하기
 ### 8. 다중 컨테이너 앱을 위한 Elastic Beanstalk 환경 생성
 ### 9. VPC 설정하기
