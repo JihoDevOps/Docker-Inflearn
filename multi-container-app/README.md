@@ -57,7 +57,7 @@ Client의 요청은 Proxy 서버가 받아 로드 밸런싱과 유사한 기능�
 
 1.  `npm init`으로 backend 폴더에 Project를 생성한다.
 2.  `package.json` 파일을 수정한다.
-    ```json
+    ```js
     {
       "name": "backend",
       "version": "1.0.0",
@@ -776,6 +776,65 @@ Task Definition, Container Definition을 명시해야 한다.
 Docker Daemon으로 전달된다.
 
 ### 7. Dockerrun aws json 파일 작성하기
+
+1.  `dockerrun.aws.json` 파일 생성
+2.  Container Definitions 작성
+
+#### `
+
+```js
+{
+  // Dockerrun version 2
+  "AWSEBDockerrunVersion": 2,
+  // Define Containers
+  "containerDefinitions": [
+    // Container
+    {
+      "name": "frontend",
+      // Image at DockerHub
+      "image": "jihogrammer/docker-frontend",
+      // Link to other Container
+      // 이름을 이용하여 Docker Compose를 통해 생성된
+      // 다른 컨테이너에서 접근 가능
+      "hostname": "frontend",
+      // If this Container failed, stop or continue
+      // 실패할 경우 작업을 중지하려면 true
+      // 필수적이지 않은 컨테이너는 인스턴스의 나머지 컨테이너에
+      // 영향을 미치지 않고 종료되거나 충돌할 수 있다.
+      "essential": false,
+      // 컨테이너 전용으로 예약할 인스턴스 내 메모리
+      // memory 또는 memoryReservation 중
+      // 하나 또는 모두에 0이 아닌 정수를 지정한다.
+      "memory": 128
+    },
+    {
+      "name": "backend",
+      "image": "jihogrammer/docker-backend",
+      "hostname": "backend",
+      "essential": false,
+      "memory": 128
+    },
+    {
+      "name": "nginx",
+      "image": "jihogrammer/docker-nginx",
+      "hostname": "nginx",
+      "essential": true,
+      // 컨테이너에 있는 네트워크 지점을 호스트에 있는 지점에 매핑
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      // 연결할 컨테이너의 목록
+      // 연결된 컨테이너는 서로를 검색하고 안전하게 통신 가능
+      "links": ["frontend", "backend"],
+      "memory": 128
+    }
+  ]
+}
+```
+
 ### 8. 다중 컨테이너 앱을 위한 Elastic Beanstalk 환경 생성
 ### 9. VPC 설정하기
 ### 10. MySQL을 위한 AWS RDS 생성하기
