@@ -620,6 +620,11 @@ Docker Container가 사라져도 DB의 영속성은 유지되도록
 ## B. 테스트 배포 부분
 
 ### 1. 섹션 설명 (테스트 배포)
+
+Single Container 프로젝트에서는 직접 파일을 배포했는데,
+이번에는 Docker Hub에 image를 전달하여 사용한다.
+이 과정에서 image를 빌드하는 시간이 2번에서 1번으로 줄어든다.
+
 ### 2. 도커 환경의 MySQL 부분 정리하기
 ### 3. GitHub에 소스 코드 올리기
 ### 4. Travis CI Steps
