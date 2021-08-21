@@ -636,6 +636,9 @@ MySQL이 Docker 환경이 아닌 AWS RDS 환경으로 변경한다.
 3.  AWS에서 DB 생성 후 `db.js` 내용 적절하게 수정
 
 ### 3. GitHub에 소스 코드 올리기
+
+
+
 ### 4. Travis CI Steps
 ### 5. travis yml 파일 작성하기
 ### 6. Dockerrun aws json에 대하여
