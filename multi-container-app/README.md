@@ -841,6 +841,51 @@ Docker Daemon으로 전달된다.
 -   [link](http://docker-fullstack-app-linux2-env.eba-6b8gngmf.ap-northeast-2.elasticbeanstalk.com)
 
 ### 9. VPC 설정하기
+
+현재까지 운영 환경에서 DB를 위한 설정이 없다.
+따라서 AWS의 RDS를 이용하여 MySQL을 애플리케이션과 연결해야 한다.
+여기서 VPC와 Security Group을 설정해야 한다.
+
+EB 인스턴스가 RDS(MySQL)에 접근하려면 VPC와 Security Group이 필요하다.
+자동으로 연결되지 않으므로, 따로 설정해야 통신을 할 수 있다.
+
+#### VPC
+
+>   Amazon Virtual Private Cloud
+
+AWS 클라우드에서 논리적으로 격리된 공간을 프로비저닝 해서
+고객이 정의하는 가상 네트워크에서 AWS 리소스를 시작할 수 있다.
+
+EC2 인스턴스나 EB 인스턴스 혹은 RDS가 있는 상태에서
+이들을 하나의 그룹 안에서만 접근이 가능하도록 설정한다.
+이를 설정함으로써 다른 아이디로 접근할 수 없도록 보호한다.
+
+EB 인스턴스나 RDS를 생성하면 기본적으로 VPC(default)가 할당된다.
+할당될 때 지역(region)별로 다르게 할당된다.
+현재 기본적으로 할당된 VPC는 EB 인스턴스와 RDS를 포함한다.
+하지만 설정을 따로 하지 않는 이상 서로 통신은 할 수 없다.
+VPC 정보를 확인하기 위해서는 대시보드에서 VPC 검색해서 볼 수 있다.
+
+#### Security Group(보안 그룹)
+
+EC2 인스턴스와 외부 인스턴스 사이의 방화벽 정도로 생각하자.
+
+-   inbound :
+    외부에서 EC2 인스턴스나 EB 인스턴스로 요청을 보내는 트래픽이다.
+    HTTP, HTTPS, SSH 등이 있다.
+-   outbound :
+    EC2 인스턴스나 EB 인스턴스 등에서 외부로 나가는 트래픽이다.
+    파일을 다운로드 하거나
+    inbound로 들어온 트래픽을 처리하여 응답하는 경우도 포함한다.
+
+결론적으로 Security Group이 inbound와 outbound를 통제해서
+트래픽을 열거나 닫을 수 있다.
+
+#### 어떻게 VPC와 Security Group으로 통신하게 설정하는지
+
+VPC 안에 있는 AWS 서비스 간 트래픽을 모두 허용할 수 있도록
+Security Group을 허용한다.
+
 ### 10. MySQL을 위한 AWS RDS 생성하기
 ### 11. Security Group 생성하기
 ### 12. Security Group 적용하기
