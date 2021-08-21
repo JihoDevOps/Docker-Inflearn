@@ -626,6 +626,15 @@ Single Container 프로젝트에서는 직접 파일을 배포했는데,
 이 과정에서 image를 빌드하는 시간이 2번에서 1번으로 줄어든다.
 
 ### 2. 도커 환경의 MySQL 부분 정리하기
+
+MySQL이 Docker 환경이 아닌 AWS RDS 환경으로 변경한다.
+
+1.  `docker-compose.yml`에서 mysql 관련 부분 삭제
+2.  mysql 디렉토리 삭제
+    -   mysql 부분을 주석처리하면,
+        docker-compose 시 알아서 해당 디렉터리는 무시한다.
+3.  AWS에서 DB 생성 후 `db.js` 내용 적절하게 수정
+
 ### 3. GitHub에 소스 코드 올리기
 ### 4. Travis CI Steps
 ### 5. travis yml 파일 작성하기
