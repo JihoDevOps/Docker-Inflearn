@@ -989,3 +989,25 @@ deploy:
 Travis CI가 AWS에 접근할 수 있도록 설정이 필요하다.
 
 ### 15. Travis CI의 AWS 접근을 위한 API Key 생성
+
+소스 파일을 전달하기 위한 접근 요건 설정
+
+-   "GitHub - Travis"는 Travis 홈페이지에서 인증
+-   "Travis - AWS"는 AWS가 제공하는 Secret Key를 지정
+
+7강에서 다룬 내용과 중복된다.
+
+1.  AWS IAM USER 생성
+    -   사용자 이름: docker-fullstack-user
+    -   액세스 유형: 프로그래밍 방식 액세스
+    -   기존 정책 중 "AdministratorAccess-AWSElasticBeanstalk" 지정
+    -   태그는 생략했음
+2. 발급된 Key를 Travis CI에서 환경변수로 설정
+    -   이렇게 지정해야 키값을 노출하지 않는다.
+3. .travis.yml에서 환경변수 매핑
+    ```yml
+    deploy:
+      ...
+      access_key_id: $AWS_ACCESS_KEY
+      secret_access_key: $AWS_SECRET_ACCESS_KEY
+    ```
