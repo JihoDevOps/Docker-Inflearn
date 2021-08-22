@@ -966,4 +966,26 @@ MySQL 인스턴스와 소통할 때 환경변수를 인식하지 못한다.
     -   HOST 이름만 엔드포인트로 사용하고 나머지는 동일하게 지정
 
 ### 14. travis yml 파일 작성하기 (배포 부분)
+
+```yml
+deploy:
+  # 외부 서비스 표시 (s3, elasticbeanstalk, firebase 등)
+  provider: elasticbeanstalk
+  # 현재 사용하고 있는 AWS의 서비스가 위치하고 있는 물리적 장소
+  region: "ap-northeast-2"
+  # 생성한 애플리케이션의 이름
+  app: "docker-fullstack-app"
+  # 생성한 애플리케이션의 환경 이름
+  env: "docker-fullstack-app-Linux2-env"
+  # 해당 elasticbeanstalk를 위한 s3 버켓 이름
+  bucket_name: "elasticbeanstalk-ap-northeast-2-869075270387"
+  # 애플리케이션 이름과 동일하게 설정
+  bucket_path: "docker-fullstack-app"
+  on:
+    branch: master
+```
+
+이렇게 설정하고 끝이 아니다.
+Travis CI가 AWS에 접근할 수 있도록 설정이 필요하다.
+
 ### 15. Travis CI의 AWS 접근을 위한 API Key 생성
